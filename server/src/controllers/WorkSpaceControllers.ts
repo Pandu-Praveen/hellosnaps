@@ -41,14 +41,20 @@ export const getUserWorkspaceById = bp(async (req: Request, res: Response) => {
 
 export const deleteWorkspaceById = bp(async (req: Request, res: Response) => {
   const id = req.params.id;
+  const workspace = await WorkSpaceModel.findByPk(id);
+  if (!workspace) {
+    throw new HttpError(404, "Workspace Not Found");
+  }
+  console.log(id);
   // if (await deleteS3Folder(id)) {
   //   const workspace = await WorkSpaceModel.findByPk(id);
   //   if (!workspace) {
   //     throw new HttpError(404, "Workspace Not Found");
   //   }
-  //   await workspace.destroy();
+  // await workspace.destroy();
   //   res.status(204).send();
   // }
+  await workspace.destroy();
   res.send("pass " + id);
 });
 
