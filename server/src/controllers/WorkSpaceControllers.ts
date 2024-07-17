@@ -1,0 +1,70 @@
+import { Request, Response } from "express";
+import bp from "../utils/bigPromise.js";
+import WorkSpaceModel from "../models/WorkSpaceModel.js";
+import { nanoid } from "nanoid";
+import MediaModel from "../models/MediaModel.js";
+import HttpError from "../utils/HttpError.js";
+import QueueModel from "../models/QueueModel.js";
+import { Op } from "sequelize";
+import { pySnap } from "../utils/pysnap.js";
+
+export const createWorkSpace = bp(async (req: Request, res: Response) => {
+  const { name } = req.body;
+  const workspace = await WorkSpaceModel.create({
+    id: nanoid(),
+    name,
+    owner: req.user.id,
+  });
+  res.status(201).json({ workspace });
+});
+
+export const getUserWorkSpaces = bp(async (req: Request, res: Response) => {
+  const owner = req.user.id;
+  const workspaces = await WorkSpaceModel.findAll({
+    where: { owner },
+    order: [["updatedAt", "desc"]],
+    include: [{ model: MediaModel, attributes: ["id"] }],
+  });
+  res.status(200).json({ workspaces });
+});
+
+export const getUserWorkspaceById = bp(async (req: Request, res: Response) => {
+  const id = req.params.id;
+  const workspace = await WorkSpaceModel.findByPk(id, {
+    include: [
+      { model: MediaModel, order: [["filePath", "asc"]] },
+      { model: QueueModel, order: [["updatedAt", "desc"]] },
+    ],
+  });
+  res.status(200).json({ workspace });
+});
+
+export const deleteWorkspaceById = bp(async (req: Request, res: Response) => {
+  const id = req.params.id;
+  // if (await deleteS3Folder(id)) {
+  //   const workspace = await WorkSpaceModel.findByPk(id);
+  //   if (!workspace) {
+  //     throw new HttpError(404, "Workspace Not Found");
+  //   }
+  //   await workspace.destroy();
+  //   res.status(204).send();
+  // }
+  res.send("pass " + id);
+});
+
+export const analyzeWorkspace = bp(async (req: Request, res: Response) => {
+  const workspace = req.params.id;
+  const isEnqueued = await QueueModel.findOne({
+    where: { workspace, status: { [Op.or]: ["queued", "running"] } },
+  });
+  if (isEnqueued) {
+    pySnap();
+    throw new HttpError(400, "Already in Queue");
+  }
+  const status = await QueueModel.create({
+    workspace,
+    status: "queued",
+    user: req.user.id,
+  });
+  res.status(201).json({ status });
+});
