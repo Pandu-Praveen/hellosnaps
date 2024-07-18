@@ -28,6 +28,7 @@ const QueueModel = sequelize.define("Queue", {
       model: User,
       key: "id",
     },
+    allowNull: true,
   },
 });
 

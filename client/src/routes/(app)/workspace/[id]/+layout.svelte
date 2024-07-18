@@ -5,7 +5,7 @@
 	import WorkspaceTabs from "../../../../components/WorkspaceTabs.svelte";
 
 	const workspaceId = $page.params.id;
-	let workspace: WorkspaceType | null;
+	export let workspace: WorkspaceType | null;
 	let buttonText = "Analyze Photos";
 	let buttonDisabled = false;
 

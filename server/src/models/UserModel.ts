@@ -3,68 +3,71 @@ import { DataTypes } from "sequelize";
 import { nanoid } from "nanoid";
 import { sequelize } from "../config/databaseConfig.js";
 
-
-const User = sequelize.define("User", {
+const User = sequelize.define(
+  "User",
+  {
     id: {
-        type: DataTypes.STRING,
-        primaryKey: true,
-        allowNull: false,
-        unique: true,
-        defaultValue: nanoid,
+      type: DataTypes.STRING,
+      primaryKey: true,
+      allowNull: false,
+      unique: true,
+      defaultValue: nanoid,
     },
     name: {
-        type: DataTypes.STRING,
-        allowNull: false
+      type: DataTypes.STRING,
+      allowNull: false,
     },
     email: {
-        type: DataTypes.STRING,
-        allowNull: true,
-        unique: true,
-        validate: {
-            isEmail: true
-        }
+      type: DataTypes.STRING,
+      allowNull: true,
+      unique: true,
+      validate: {
+        isEmail: true,
+      },
     },
     emailVerified: {
-        type: DataTypes.BOOLEAN,
-        allowNull: false,
-        defaultValue: false
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
     },
     phone: {
-        type: DataTypes.STRING,
-        unique: true,
-        validate: {
-            // eslint-disable-next-line no-useless-escape
-            is: "^\+\d{1,4}\d{10}$",
-        },
+      type: DataTypes.STRING,
+      unique: true,
+      validate: {
+        // eslint-disable-next-line no-useless-escape
+        is: "^+d{1,4}d{10}$",
+      },
     },
     password: {
-        type: DataTypes.STRING,
-        set(plainText: string) {
-            this.setDataValue("password", bcrypt.hashSync(plainText, 12));
-        },
-
+      type: DataTypes.STRING,
+      set(plainText: string) {
+        this.setDataValue("password", bcrypt.hashSync(plainText, 12));
+      },
     },
     role: {
-        type: DataTypes.ENUM("user", "admin"),
-        defaultValue: "user",
+      type: DataTypes.ENUM("user", "admin"),
+      defaultValue: "user",
     },
     last_sign_in: {
-        type: DataTypes.DATE,
+      type: DataTypes.DATE,
     },
-}, {
+  },
+  {
     defaultScope: {
-        attributes: { exclude: ["password"] }
+      attributes: { exclude: ["password"] },
     },
     hooks: {
-        afterCreate: (record) => {
-            delete record.dataValues.password;
-        },
-        afterUpdate: (record) => {
-            delete record.dataValues.password;
-        }
-    }
-});
+      afterCreate: (record) => {
+        delete record.dataValues.password;
+      },
+      afterUpdate: (record) => {
+        delete record.dataValues.password;
+      },
+    },
+  },
+);
 
 User.sync({ alter: true });
 
+// type UserModelT = typeof  User;
 export default User;

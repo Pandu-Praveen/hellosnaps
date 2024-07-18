@@ -3,6 +3,7 @@ import User from "../models/UserModel.js";
 import { Op } from "sequelize";
 import bigPromise from "../utils/bigPromise.js";
 import HttpError from "../utils/HttpError.js";
+import cloudinary from "../config/cloudinary.js";
 
 export const getAllUsers = async (_req: Request, res: Response) => {
   const users = await User.findAll();
@@ -17,9 +18,10 @@ export const createNewUser = bigPromise(async (req: Request, res: Response) => {
   if (userExist) {
     throw new HttpError(400, "User Already Exists");
   }
-  if(role && !["user", "admin"].includes(role)){
+  if (role && !["user", "admin"].includes(role)) {
     throw new HttpError(400, "Role is Not Allowed");
   }
   const user = await User.create({ name, username, email, role });
+  console.log(user);
   res.status(201).json({ user });
 });

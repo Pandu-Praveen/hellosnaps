@@ -1,15 +1,44 @@
 <script lang="ts">
 	import { page } from "$app/stores";
 	import api from "$lib/api";
+	import { user } from "$lib/auth";
 	import { uploadFile } from "$lib/s3";
-	import { MediaStore, uploadingStatus, workspaceStore } from "$lib/stores";
+	import { MediaStore, uploadingStatus, workspaceStore, type WorkspaceType } from "$lib/stores";
 	import { FileDropzone, ProgressBar, getToastStore } from "@skeletonlabs/skeleton";
 
 	const toastStore = getToastStore();
 
 	let files: FileList;
-
+	
 	const workspaceId = $page.params.id;
+	let workspace: WorkspaceType | null;
+	const getWorkspace = async () => {
+			if ($MediaStore && $MediaStore[workspaceId]) {
+				workspace = $MediaStore[workspaceId];
+			} else {
+				const request = await api.get("/workspaces/" + $page.params.id);
+				if (request.status == 200) {
+					workspace = request.data.workspace;
+					workspace?.Media.sort((a, b) => {
+						if (a.filePath && b.filePath) {
+							if (a.filePath < b.filePath) {
+								return -1;
+							} else {
+								return 1;
+							}
+						}
+						return 0;
+					});
+					MediaStore.update((ms) => {
+						if (!ms) {
+							ms = {};
+						}
+						ms[workspaceId] = workspace as WorkspaceType;
+						return ms;
+					});
+				}
+			}
+		};
 
 	$: if (
 		$uploadingStatus?.totalFiles &&
@@ -30,7 +59,11 @@
 		});
 	}
 
+	getWorkspace();
+
 	const handleFileUpload = () => {
+		console.log($user?.name);
+		
 		uploadingStatus.set({
 			totalFiles: files.length,
 			uploadedFiles: 0,
@@ -40,7 +73,9 @@
 			status: "in-progress"
 		});
 		Array.from(files).forEach(async (file: File) => {
-			const response = await uploadFile(workspaceId, file);
+			if (!$user) return alert("Cant find user info");
+			
+			const response = await uploadFile($user?.id, $user?.name, workspace?.name || "", file);
 			if (response && response.ok) {
 				console.log(response);
 				uploadingStatus.update((currentStat) => {

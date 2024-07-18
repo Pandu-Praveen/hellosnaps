@@ -1,8 +1,19 @@
 import express from "express";
-import { addMedia } from "../../controllers/MediaControllers.js";
-
+import { addMedia, uploadFiles } from "../../controllers/MediaControllers.js";
+import cloudinary from "../../config/cloudinary.js";
+import multer from "multer";
 const router = express.Router();
+const decoder = multer({ storage: multer.memoryStorage() });
 
 router.post("/", addMedia);
 
+/** Temporary testing enmpodints */
+router.get("/create-dolfer", (req, res) => {
+  cloudinary.api
+    .create_folder("/jummaa")
+    .then((res) => console.log(res))
+    .catch((err) => console.log(err));
+  res.send("ok");
+});
+router.post("/:id/upload", decoder.single("fi"), uploadFiles);
 export default router;

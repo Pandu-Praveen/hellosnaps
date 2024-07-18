@@ -1,6 +1,7 @@
 import { writable } from "svelte/store";
 import api from "./api";
 import { goto } from "$app/navigation";
+import { workspaceStore } from "./stores";
 
 export interface UserType {
 	password?: string;
@@ -66,6 +67,7 @@ export const logout = async () => {
 	const response = await api.get("/auth/logout");
 	if (response.status == 200) {
 		user.set(null);
+		workspaceStore.set(null);
 		localStorage.removeItem("refreshToken");
 	}
 };

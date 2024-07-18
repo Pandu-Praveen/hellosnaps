@@ -7,9 +7,17 @@ import HttpError from "../utils/HttpError.js";
 import QueueModel from "../models/QueueModel.js";
 import { Op } from "sequelize";
 import { pySnap } from "../utils/pysnap.js";
+import cloudinary from "../config/cloudinary.js";
+import { slugify } from "../utils/misc.js";
 
 export const createWorkSpace = bp(async (req: Request, res: Response) => {
   const { name } = req.body;
+  cloudinary.api
+    .create_folder(
+      `hellosnaps/images/${req.user.id}-${slugify(req.user.name)}/${name}`,
+    )
+    .then((res) => console.log(res))
+    .catch((err) => console.log(err));
   const workspace = await WorkSpaceModel.create({
     id: nanoid(),
     name,

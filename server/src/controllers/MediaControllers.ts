@@ -12,3 +12,12 @@ export const addMedia = bp(async (req: Request, res: Response) => {
   });
   res.status(201).json({ media });
 });
+
+export const uploadFiles = async (req: Request, res: Response) => {
+  try {
+    console.log(req.file);
+    res.send("pl");
+  } catch (error) {
+    console.log(error);
+  }
+};

@@ -8,6 +8,8 @@ import Tokens from "../models/TokensModel.js";
 import { NOW, Op } from "sequelize";
 import HttpError from "../utils/HttpError.js";
 import { user } from "../types/globals.js";
+import cloudinary from "../config/cloudinary.js";
+import { slugify } from "../utils/misc.js";
 
 const { JWT_SECRET } = process.env;
 
@@ -22,6 +24,12 @@ export const Signup = bp(async (req: Request, res: Response) => {
     throw new HttpError(400, "User Already Exists");
   }
   const user = await User.create({ name, email, password });
+  cloudinary.api
+    .create_folder(
+      `hellosnaps/images/${user.dataValues.id}-${slugify(user.dataValues.name)}`,
+    )
+    .then((res) => console.log(res))
+    .catch((err) => console.log(err));
   res.status(201).json({ user });
 });
 
