@@ -18,7 +18,7 @@ export const sequelize = new Sequelize(
       process.env.NODE_ENV == "development"
         ? {}
         : {
-            ssl: false,
+            ssl: true,
           },
     logging: false,
   },

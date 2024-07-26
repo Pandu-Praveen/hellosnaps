@@ -1,4 +1,4 @@
 /s3-bucket
 /.vscode
 /node_modules
-/server/.venv/Lib
+/python/.venv/Lib

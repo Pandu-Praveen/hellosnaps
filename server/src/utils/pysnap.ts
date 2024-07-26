@@ -23,21 +23,27 @@ export const pySnap = async () => {
   await queueItem.update({
     status: "running",
   });
-  PythonShell.run("main.py", {
-    scriptPath: PY_SCRIPT_PATH,
-    args: [workspaceId],
-  })
-    .then((results) => {
-      console.log("pySnap Success");
-      console.log(results);
-      queueItem.update({
-        status: "completed",
-      });
-    })
-    .catch((e) => {
-      console.log("pySnap Failed", e);
-      queueItem.update({
-        status: "failed",
-      });
-    });
+  // PythonShell.run("main.py", {
+  //   scriptPath: PY_SCRIPT_PATH,
+  //   args: [workspaceId],
+  // })
+  //   .then((results) => {
+  //     console.log("pySnap Success");
+  //     console.log(results);
+  //     queueItem.update({
+  //       status: "completed",
+  //     });
+  //   })
+  //   .catch((e) => {
+  //     console.log("pySnap Failed", e);
+  //     queueItem.update({
+  //       status: "failed",
+  //     });
+  //   });
+  const temp = fetch("http://localhost:5000/summa", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ workspaceId }),
+  });
+  console.log(temp);
 };
