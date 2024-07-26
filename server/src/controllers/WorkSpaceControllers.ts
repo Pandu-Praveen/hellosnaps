@@ -12,9 +12,10 @@ import { slugify } from "../utils/misc.js";
 
 export const createWorkSpace = bp(async (req: Request, res: Response) => {
   const { name } = req.body;
+  // console.log(name);
   cloudinary.api
     .create_folder(
-      `hellosnaps/images/${req.user.id}-${slugify(req.user.name)}/${name}`,
+      `hellosnaps/images/${slugify(req.user.name)}-${req.user.id}/${name}`,
     )
     .then((res) => console.log(res))
     .catch((err) => console.log(err));

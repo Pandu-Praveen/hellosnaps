@@ -23,10 +23,9 @@ export const pySnap = async () => {
   await queueItem.update({
     status: "running",
   });
-  PythonShell.run("index.py", {
+  PythonShell.run("main.py", {
     scriptPath: PY_SCRIPT_PATH,
     args: [workspaceId],
-    
   })
     .then((results) => {
       console.log("pySnap Success");

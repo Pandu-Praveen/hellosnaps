@@ -26,7 +26,7 @@ export const Signup = bp(async (req: Request, res: Response) => {
   const user = await User.create({ name, email, password });
   cloudinary.api
     .create_folder(
-      `hellosnaps/images/${user.dataValues.id}-${slugify(user.dataValues.name)}`,
+      `hellosnaps/images/${slugify(user.dataValues.name)}-${user.dataValues.id}`,
     )
     .then((res) => console.log(res))
     .catch((err) => console.log(err));

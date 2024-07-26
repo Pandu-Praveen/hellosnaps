@@ -4,6 +4,8 @@
 	import { MediaStore, type MediaType } from "$lib/stores";
 
 	const workspaceId = $page.params.id;
+	console.log($page.params);
+	const pageLinkPrefix = `/workspace/${workspaceId}`;
 	const workspace = $MediaStore ? $MediaStore[workspaceId] : null;
 	const BASE_URL = `https://res.cloudinary.com/${PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload/`;
 
@@ -26,6 +28,27 @@
 		}
 	};
 
+	const deletePhoto = async (filePath: string) => {
+		try {
+			const response = await fetch(`http://localhost:9000/api/media/delete`, {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json"
+				},
+				body: JSON.stringify({ filePath })
+			});
+			if (!response.ok) {
+				throw new Error("Failed to delete photo");
+			}
+			photos = photos?.filter((photo) => photo.filePath !== filePath);
+			selectedMedia = undefined;
+			toggleModal();
+		} catch (error) {
+			console.error("Error deleting photo:", error);
+			alert("Error deleting photo. Please try again.");
+		}
+	};
+
 	window.addEventListener("keydown", (ev) => {
 		if (!photos || !selectedMedia) {
 			return;
@@ -43,18 +66,55 @@
 	});
 </script>
 
-<section class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 mx-auto">
+<section
+	class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 mx-auto below-section"
+>
 	{#if photos}
 		{#each photos as photo}
-			<a href="." on:click|preventDefault={() => toggleModal(photo.id)}>
+			<a
+				href="."
+				on:click|preventDefault={() => toggleModal(photo.id)}
+				class="relative block group"
+			>
 				<img
 					id={photo.id}
 					height={300}
-					src={ BASE_URL + photo.filePath}
+					src={photo.filePath}
 					alt={photo.id}
-					class="placeholder animate-pulse bg-gray-200 min-h-48 w-full rounded-none image-fit aspect-video"
+					class="placeholder animate-pulse bg-gray-200 min-h-48 w-full rounded-none aspect-video"
+					style="object-fit: cover; width: 100%; height: 100%;"
 					on:load={() => removePlaceholder(photo.id)}
 				/>
+				<!-- Delete Button -->
+				<button
+					on:click|preventDefault={(event) => {
+						event.stopPropagation();
+						deletePhoto(photo.filePath);
+					}}
+					on:keydown|preventDefault={(event) => {
+						if (event.key === "Enter" || event.key === " ") {
+							event.stopPropagation();
+							deletePhoto(photo.filePath);
+						}
+					}}
+					role="button"
+					aria-label="Delete photo"
+					class="delete-button hidden group-hover:block"
+					style="position:absolute; top: 8px; right: 8px; cursor: pointer; background: rgba(0, 0, 0, 0.5); border-radius: 50%; padding: 2px; border: none;"
+				>
+					<!-- You can use any icon here, FontAwesome is used in this example -->
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						fill="white"
+						viewBox="0 0 24 24"
+						width="16"
+						height="16"
+					>
+						<path
+							d="M3 6l3 18h12l3-18h-18zm12 2h2v14h-2v-14zm-4 0h2v14h-2v-14zm-4 0h2v14h-2v-14zm7-4l1-2h-6l1 2h4zm5-2v2h-16v-2h5l-1-2h8l-1 2h5z"
+						/>
+					</svg>
+				</button>
 			</a>
 		{/each}
 	{/if}
@@ -90,7 +150,7 @@
 			</div>
 			<img
 				id={selectedMedia.id}
-				src={BASE_URL + selectedMedia.filePath}
+				src={selectedMedia.filePath}
 				alt={selectedMedia.id}
 				class="h-fit w-fit lg:max-w-[1000px] lg:max-h-[600px] cover"
 			/>
@@ -109,3 +169,12 @@
 		</section>
 	{/if}
 </dialog>
+
+<style>
+	.delete-button {
+		display: none;
+	}
+	.group:hover .delete-button {
+		display: block;
+	}
+</style>

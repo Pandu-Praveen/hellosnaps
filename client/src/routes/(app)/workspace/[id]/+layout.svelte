@@ -49,12 +49,17 @@
 				break;
 			default:
 				buttonDisabled = false;
+				
 				buttonText = "Analyze Photos";
+				
 		}
 	};
-
+	// setButtonStatus('')
+	setButtonStatus("Analyze Photos")
 	const analyzeWorkspace = async () => {
 		const response = await api.post(`/workspaces/${workspaceId}/analyze`);
+		console.log(response);
+		
 		if (response.status === 201) {
 			setButtonStatus(response.data.status.status);
 		}

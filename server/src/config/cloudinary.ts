@@ -1,5 +1,6 @@
 import { v2 as cloudinary } from "cloudinary";
-
+import dotenv from "dotenv";
+dotenv.config();
 const {
   PUBLIC_CLOUDINARY_CLOUD_NAME,
   PUBLIC_CLOUDINARY_API_KEY,
