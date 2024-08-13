@@ -1,6 +1,9 @@
 import { PythonShell } from "python-shell";
 import QueueModel from "../models/QueueModel.js";
-
+import WorkSpaceModel from "../models/WorkSpaceModel.js";
+import UserModel from "../models/UserModel.js";
+import { slugify } from "../utils/misc.js";
+import { workerData } from "worker_threads";
 const { PY_SCRIPT_PATH } = process.env;
 
 export const pySnap = async () => {
@@ -40,10 +43,32 @@ export const pySnap = async () => {
   //       status: "failed",
   //     });
   //   });
-  const temp = fetch("http://localhost:5000/summa", {
+  const workspaceData = await WorkSpaceModel.findOne({
+    where: { id: workspaceId },
+  });
+  // console.log("🚀 ~ pySnap ~ workspaceData:", workspaceData);
+  const workspaceName = workspaceData?.get("name") as string;
+  // console.log("🚀 ~ pySnap ~ workspaceName:", workspaceName);
+
+  const userId = workspaceData?.get("owner") as string;
+  // console.log("🚀 ~ pySnap ~ userId:", userId);
+  const userData = await UserModel.findOne({ where: { id: userId } });
+  const userName = userData?.get("name") as string;
+
+  const val = `hellosnaps/images/${slugify(userName)}-${userId}/${workspaceName}`;
+
+  console.log("🚀 ~ pySnap ~ val:", val);
+
+  const temp = await fetch("http://localhost:5000/create", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ workspaceId }),
+    body: JSON.stringify({
+      file_name: val,
+      workspaceId,
+    }),
   });
-  console.log(temp);
+  const response = await temp.json();
+  console.log("🚀 ~ pySnap ~ response:", response);
+
+  return response;
 };

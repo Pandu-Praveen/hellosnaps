@@ -87,3 +87,53 @@ export const deleteFile = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Failed to delete photo", error });
   }
 };
+
+export const uploadTags = async (req: Request, res: Response) => {
+  try {
+    const workspaceId = req.params.id;
+    console.log("🚀 ~ uploadTags ~ workspaceId:", workspaceId);
+
+    const META_DATA = req.body;
+    console.log("🚀 ~ uploadTags ~ META_DATA:", META_DATA);
+    const media = await MediaModel.findAll({
+      where: {
+        workspace: workspaceId,
+      },
+    });
+    console.log("🚀 ~ uploadTags ~ media:", media);
+    // const tags = [];
+    for (const key of media) {
+      const uniqueImagePath = key.dataValues.filePath
+        .split("/")
+        .at(-1)
+        .split(".")
+        .at(0);
+
+      const totalTags = [];
+      for (const tags in META_DATA) {
+        const itrTags = META_DATA[tags];
+        console.log(tags);
+        for (const tag of itrTags) {
+          console.log(tag, uniqueImagePath);
+          const val = tag.split("/").at(-1);
+          console.log("🚀 ~ uploadTags ~ val:", val);
+
+          if (val == uniqueImagePath) {
+            totalTags.push(tags);
+            break;
+          }
+        }
+      }
+      await key.update({ tags: totalTags });
+      console.log(totalTags);
+    }
+
+    res.status(200).json({ status: "ok" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      status: "error",
+      message: "An error occurred while updating tags.",
+    });
+  }
+};

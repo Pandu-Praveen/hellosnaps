@@ -7,9 +7,12 @@
 	console.log($page.params);
 	const pageLinkPrefix = `/workspace/${workspaceId}`;
 	const workspace = $MediaStore ? $MediaStore[workspaceId] : null;
+	console.log("🚀 ~ workspace:", workspace);
 	const BASE_URL = `https://res.cloudinary.com/${PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload/`;
 
 	let photos = workspace?.Media;
+	console.log("🚀 ~ photos:", photos);
+
 	let selectedMedia: MediaType | undefined;
 	let selectedIndex: number = 0;
 
@@ -127,6 +130,8 @@
 
 <dialog>
 	{#if selectedMedia}
+		console.log("🚀 ~ selectedMedia:", selectedMedia)
+
 		<section class="bg-white-300 w-fit h-fit p-3">
 			<div class="flex flex-row justify-between w-full mb-3">
 				<div class="flex flex-col">

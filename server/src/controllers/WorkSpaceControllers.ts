@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Request, response, Response } from "express";
 import bp from "../utils/bigPromise.js";
 import WorkSpaceModel from "../models/WorkSpaceModel.js";
 import { nanoid } from "nanoid";
@@ -72,14 +72,18 @@ export const analyzeWorkspace = bp(async (req: Request, res: Response) => {
   const isEnqueued = await QueueModel.findOne({
     where: { workspace, status: { [Op.or]: ["queued", "running"] } },
   });
+
   if (isEnqueued) {
     pySnap();
     throw new HttpError(400, "Already in Queue");
   }
+
   const status = await QueueModel.create({
     workspace,
     status: "queued",
     user: req.user.id,
+    response,
   });
+
   res.status(201).json({ status });
 });

@@ -22,10 +22,13 @@ def summa():
 
 @app.route("/create",methods = ['POST'])
 def create():
+    workspaceId =request.json.get('workspaceId')
     file_name = request.json.get('file_name') #file_name -> The name of the file which as the photo
 
-    data = create_album(str(file_name).strip())
+    data = create_album(str(file_name).strip(),str(workspaceId).strip())
+    print(data)
     return jsonify(data)
+    
     
 @app.route("/retrive",methods = ['POST'])
 def retrive():

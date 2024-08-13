@@ -49,19 +49,32 @@
 				break;
 			default:
 				buttonDisabled = false;
-				
+
 				buttonText = "Analyze Photos";
-				
 		}
 	};
 	// setButtonStatus('')
-	setButtonStatus("Analyze Photos")
+	setButtonStatus("Analyze Photos");
 	const analyzeWorkspace = async () => {
 		const response = await api.post(`/workspaces/${workspaceId}/analyze`);
-		console.log(response);
-		
+
 		if (response.status === 201) {
 			setButtonStatus(response.data.status.status);
+		}
+		try {
+			const response = await fetch(`http://localhost:9000/workspaces/${workspaceId}/analyze`, {
+				method: "POST"
+			});
+			const val = await response.json();
+			console.log("🚀 ~ analyzeWorkspace ~ response:", response);
+			console.log("🚀 ~ analyzeWorkspace ~ val:", val.status);
+			console.log("🚀 ~ analyzeWorkspace ~ val:", val);
+
+			if (!response.ok) {
+				throw new Error("Failed to Get Album");
+			}
+		} catch (error) {
+			console.error("Error Creating Ablum photos:", error);
 		}
 	};
 

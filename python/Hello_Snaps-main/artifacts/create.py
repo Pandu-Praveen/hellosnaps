@@ -8,24 +8,28 @@ import cv2 as cv
 import json
 import os
 import numpy as np
-# from dotenv import load_dotenv
-# load_dotenv()
+from dotenv import load_dotenv
+load_dotenv()
 UNIQUE_FACE_ENCODINGS = {}
 
 
-PUBLIC_CLOUDINARY_CLOUD_NAME = "dn5fjw67n"
-CLOUDINARY_API_KEY = "563745582142893"
-CLOUDINARY_API_SECRET = "GqWGqqcGBwwia5xNbxI-g9oxSkw"
+# PUBLIC_CLOUDINARY_CLOUD_NAME = "dn5fjw67n"
+# CLOUDINARY_API_KEY = "563745582142893"
+# CLOUDINARY_API_SECRET = "GqWGqqcGBwwia5xNbxI-g9oxSkw"
+
+PUBLIC_CLOUDINARY_CLOUD_NAME=os.getenv("PUBLIC_CLOUDINARY_CLOUD_NAME")
+PUBLIC_CLOUDINARY_API_KEY=os.getenv("PUBLIC_CLOUDINARY_API_KEY")
+PUBLIC_CLOUDINARY_API_SECRET=os.getenv("PUBLIC_CLOUDINARY_API_SECRET")
 
 
 # if not all([PUBLIC_CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET]):
 #     raise ValueError("Some environment variables are missing. Please check your .env file.")
-print(PUBLIC_CLOUDINARY_CLOUD_NAME,CLOUDINARY_API_KEY,CLOUDINARY_API_SECRET)
+print(PUBLIC_CLOUDINARY_CLOUD_NAME,PUBLIC_CLOUDINARY_API_KEY,PUBLIC_CLOUDINARY_API_SECRET)
 
 cloudinary.config( 
   cloud_name =PUBLIC_CLOUDINARY_CLOUD_NAME, 
-  api_key = CLOUDINARY_API_KEY, 
-  api_secret = CLOUDINARY_API_SECRET,
+  api_key = PUBLIC_CLOUDINARY_API_KEY, 
+  api_secret = PUBLIC_CLOUDINARY_API_SECRET,
   secure = True
 )
 
@@ -115,7 +119,8 @@ def find_faces(filename,img,META_DATA,person_count,image_name):
     return person_count
 
 
-def create_album(filename):
+def create_album(filename,workspaceId):
+    print("firl",filename)
     META_DATA = {}
     PERSON_COUNT = 0
     create = cloudinary.api.create_folder(filename+"/Unique_Faces")
@@ -127,8 +132,23 @@ def create_album(filename):
         img = read_image_from_url(image_name)
 
         PERSON_COUNT += find_faces(filename,img,META_DATA,PERSON_COUNT,image_id)
+
+    url = f"http://localhost:9000/api/media/{workspaceId}/uploadTags"  
+    headers = {
+        "Content-Type": "application/json",
+       
+    }
+    
+    response = requests.post(url, json=META_DATA, headers=headers)
+    print(response)
+    
+    if response.status_code == 200:
+        print("Data successfully sent to the server.")
+    else:
+        print(f"Failed to send data. Status code: {response.status_code}")
+  
     
     return META_DATA
 
-if __name__ == '__main__':
-    print(create_album("TestFolder"))
+# if __name__ == '__main__':
+#     print(create_album(filename=workspaceId))

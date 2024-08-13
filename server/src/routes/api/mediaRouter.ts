@@ -1,5 +1,9 @@
 import express from "express";
-import { uploadFiles, deleteFile } from "../../controllers/MediaControllers.js";
+import {
+  uploadFiles,
+  deleteFile,
+  uploadTags,
+} from "../../controllers/MediaControllers.js";
 // import cloudinary from "../../config/cloudinary.js";
 import multer from "multer";
 const router = express.Router();
@@ -15,4 +19,5 @@ const decoder = multer({ storage: multer.memoryStorage() });
 // });
 router.post("/:id/upload", decoder.array("fi"), uploadFiles);
 router.post("/delete", deleteFile);
+router.post("/:id/uploadTags", uploadTags);
 export default router;
