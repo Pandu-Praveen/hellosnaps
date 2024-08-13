@@ -54,7 +54,29 @@ export const deleteWorkspaceById = bp(async (req: Request, res: Response) => {
   if (!workspace) {
     throw new HttpError(404, "Workspace Not Found");
   }
-  console.log(id);
+  // console.log(id,req.user.name,req.user.id,workspace.dataValues.name);
+  
+  const workspaceimages = await MediaModel.findAll({
+    where: { workspace:id },
+  });
+  // console.log(workspaceimages)
+  for (const media of workspaceimages) {
+    const filePath = media.dataValues.filePath;
+    const publicId = filePath.split("/").slice(-5).join("/").split(".")[0];
+    // Delete the image from Cloudinary
+    cloudinary.api.delete_resources(publicId).then(console.log);
+    // Delete the image from database
+    await MediaModel.destroy({
+      where: {
+        filePath: filePath,
+      },
+    });
+  }
+  cloudinary.api
+  .delete_folder(`hellosnaps/images/${slugify(req.user.name)}-${req.user.id}/${workspace.dataValues.name}`)
+  .then(console.log)
+  .catch(console.log)
+
   // if (await deleteS3Folder(id)) {
   //   const workspace = await WorkSpaceModel.findByPk(id);
   //   if (!workspace) {
@@ -63,6 +85,8 @@ export const deleteWorkspaceById = bp(async (req: Request, res: Response) => {
   // await workspace.destroy();
   //   res.status(204).send();
   // }
+
+
   await workspace.destroy();
   res.send("pass " + id);
 });

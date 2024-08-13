@@ -7,7 +7,7 @@
     const deleteWorkspace = async () => {
         if(confirm("Click OK to Delete this Workspace and It's Files")) {
             const response = await api.delete(`/workspaces/${workspaceId}`);
-            if(response.status == 204){
+            if(response.status == 200){
                 window.location.replace("/");
             }
         }

@@ -9,6 +9,7 @@ router.use("/admin", adminIndexRouter);
 router.use("/api", apiIndexRouter);
 router.use("/auth", authRouter);
 router.use("/workspaces", workSpaceRouter);
+router.use("/sharedworkspace", workSpaceRouter);
 router.get("/", (_req, res) => {
   res.render("index");
 });
