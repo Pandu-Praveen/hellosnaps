@@ -68,6 +68,15 @@ export const pySnap = async () => {
     }),
   });
   const response = await temp.json();
+  if (response) {
+    queueItem.update({
+      status: "completed",
+    });
+  } else {
+    queueItem.update({
+      status: "failed",
+    });
+  }
   console.log("🚀 ~ pySnap ~ response:", response);
 
   return response;

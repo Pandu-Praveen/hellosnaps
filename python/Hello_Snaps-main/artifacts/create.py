@@ -101,7 +101,7 @@ def find_faces(filename,img,META_DATA,person_count,image_name):
 
     for face in face_locations:
         top, right, bottom, left = face
-        crp_face = img[top:bottom, left:right]
+        crp_face = img[top-140:bottom+60, left-100:right+100]
         crp_enc = fr.face_encodings(img,[face])[0]
 
         unique , key = is_unique(crp_enc)

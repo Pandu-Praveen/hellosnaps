@@ -3,18 +3,44 @@
 	import { PUBLIC_CLOUDINARY_CLOUD_NAME } from "$env/static/public";
 	import { MediaStore, type MediaType } from "$lib/stores";
 
-	const workspaceId = $page.params.id;
+	// Get the tag ID from the URL
+	const folderId = $page.params.id;
 
-	const pageLinkPrefix = `/workspace/${workspaceId}`;
-	const workspace = $MediaStore ? $MediaStore[workspaceId] : null;
-	console.log("🚀 ~ workspace:", workspace);
+	// Fetch the workspace ID and media from the MediaStore
+	let workspaceId = "";
+	for (const val in $MediaStore) {
+		workspaceId = val;
+		break;
+	}
+	console.log(workspaceId);
+	console.log($MediaStore);
+
+	const media = $MediaStore ? $MediaStore[workspaceId].Media : null;
+	console.log("🚀 ~ media:", media);
+
 	const BASE_URL = `https://res.cloudinary.com/${PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload/`;
 
-	let photos = workspace?.Media;
-	console.log("🚀 ~ photos:", photos);
+	// Filter photos that contain the specific tag
+	let photos = media?.filter((photo) => photo.tags?.includes(folderId)) || [];
 
 	let selectedMedia: MediaType | undefined;
 	let selectedIndex: number = 0;
+	let totalTags: any = [];
+	console.log("🚀 ~ people:", photos);
+
+	if (photos) {
+		for (const val of photos) {
+			const tags = val.tags || [];
+			for (const key of tags) {
+				if (!totalTags.includes(key)) {
+					totalTags.push(key);
+				}
+			}
+		}
+	}
+
+	totalTags.sort();
+	console.log(totalTags);
 
 	const removePlaceholder = (id: string) => {
 		document.getElementById(id)?.classList.remove("placeholder", "animate-pulse");
@@ -28,28 +54,6 @@
 			selectedIndex = photos?.indexOf(selectedMedia as MediaType) || 0;
 		} else {
 			modal?.close();
-		}
-	};
-
-	const deletePhoto = async (filePath: string) => {
-		console.log(filePath);
-		try {
-			const response = await fetch(`http://localhost:9000/api/media/delete`, {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json"
-				},
-				body: JSON.stringify({ filePath })
-			});
-			if (!response.ok) {
-				throw new Error("Failed to delete photo");
-			}
-			photos = photos?.filter((photo) => photo.filePath !== filePath);
-			selectedMedia = undefined;
-			toggleModal();
-		} catch (error) {
-			console.error("Error deleting photo:", error);
-			alert("Error deleting photo. Please try again.");
 		}
 	};
 
@@ -73,7 +77,7 @@
 <section
 	class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 mx-auto below-section"
 >
-	{#if photos}
+	{#if photos && photos.length > 0}
 		{#each photos as photo}
 			<a
 				href="."
@@ -89,45 +93,12 @@
 					style="object-fit: cover; width: 100%; height: 100%;"
 					on:load={() => removePlaceholder(photo.id)}
 				/>
-				<!-- Delete Button -->
-				<button
-					on:click|preventDefault={(event) => {
-						event.stopPropagation();
-						deletePhoto(photo.filePath);
-					}}
-					on:keydown|preventDefault={(event) => {
-						if (event.key === "Enter" || event.key === " ") {
-							event.stopPropagation();
-							deletePhoto(photo.filePath);
-						}
-					}}
-					role="button"
-					aria-label="Delete photo"
-					class="delete-button hidden group-hover:block"
-					style="position:absolute; top: 8px; right: 8px; cursor: pointer; background: rgba(0, 0, 0, 0.5); border-radius: 50%; padding: 2px; border: none;"
-				>
-					<!-- You can use any icon here, FontAwesome is used in this example -->
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						fill="white"
-						viewBox="0 0 24 24"
-						width="16"
-						height="16"
-					>
-						<path
-							d="M3 6l3 18h12l3-18h-18zm12 2h2v14h-2v-14zm-4 0h2v14h-2v-14zm-4 0h2v14h-2v-14zm7-4l1-2h-6l1 2h4zm5-2v2h-16v-2h5l-1-2h8l-1 2h5z"
-						/>
-					</svg>
-				</button>
 			</a>
 		{/each}
+	{:else}
+		<h2 class="text-center font-bold text-xl">No Images Found</h2>
 	{/if}
 </section>
-
-{#if photos?.length == 0}
-	<h2 class="text-center font-bold text-xl">No Photos Uploaded</h2>
-	<p class="text-center">Upload Photos to Show Here</p>
-{/if}
 
 <dialog>
 	{#if selectedMedia}

@@ -11,6 +11,7 @@
 	let files: FileList;
 
 	const workspaceId = $page.params.id;
+
 	let workspace: WorkspaceType | null;
 	const getWorkspace = async () => {
 		if ($MediaStore && $MediaStore[workspaceId]) {
@@ -19,6 +20,7 @@
 			const request = await api.get("/workspaces/" + $page.params.id);
 			if (request.status == 200) {
 				workspace = request.data.workspace;
+
 				workspace?.Media.sort((a, b) => {
 					if (a.filePath && b.filePath) {
 						return a.filePath < b.filePath ? -1 : 1;

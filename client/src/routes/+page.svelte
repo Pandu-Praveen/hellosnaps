@@ -4,7 +4,7 @@
 
 	let disableButton = false;
 
-	let workspaceTitle: string;
+	let workspaceTitle: string = "";
 	let search: string = "";
 	let workspaces: WorkspaceType[] | null | undefined;
 
@@ -35,10 +35,25 @@
 		}
 	};
 
+	const isValidWorkspaceName = (name: string) => {
+		const regex = /^[a-zA-Z0-9-]+$/;
+		return regex.test(name);
+	};
+
 	const newWorkspace = async () => {
-		if (!workspaceTitle.trim()) {
+		if (!workspaceTitle.trim() || !isValidWorkspaceName(workspaceTitle)) {
+			alert(
+				"Invalid workspace name. Only alphanumeric characters and hyphens are allowed, with no spaces."
+			);
 			return;
 		}
+
+		const existingWorkspace = workspaces?.find((ws) => ws.name === workspaceTitle);
+		if (existingWorkspace) {
+			alert("Workspace name already exists. Please choose a different name.");
+			return;
+		}
+
 		disableButton = true;
 		const success = await api.post("/workspaces", {
 			name: workspaceTitle
@@ -46,6 +61,9 @@
 		toggleModal();
 		if (success.status == 201) {
 			window.location.reload();
+		} else {
+			alert("Failed to create workspace. Please try again.");
+			disableButton = false;
 		}
 	};
 
