@@ -1,6 +1,7 @@
 <script lang="ts">
 	import api from "$lib/api";
 	import { workspaceStore, type WorkspaceType } from "$lib/stores";
+	import {onMount, onDestroy} from 'svelte'
 
 	let disableButton = false;
 
@@ -21,6 +22,7 @@
 	const getWorkspaces = async () => {
 		const response = await api.get("/workspaces");
 		if (response.status == 200) {
+			console.log(response.data.workspaces)
 			workspaceStore.set(response.data.workspaces);
 		}
 	};
@@ -67,9 +69,13 @@
 		}
 	};
 
-	if (!$workspaceStore) {
+	onMount(() => {
 		getWorkspaces();
-	}
+	});
+
+	onDestroy(() => {
+  		workspaceStore.set([]); // Clear the data in the store
+	});
 
 	workspaceStore.subscribe((ws) => {
 		workspaces = ws;
@@ -129,7 +135,7 @@
 			</a>
 			<a
 				class="card bg-primary-500 hover:bg-primary-600 cursor-pointer p-2 h-[10rem] flex flex-col gap-2 justify-center text-center"
-				href="."
+				href="/shared"
 			>
 				<svg
 					fill="#ffff"

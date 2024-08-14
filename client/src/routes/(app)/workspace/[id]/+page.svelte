@@ -131,6 +131,10 @@
 
 <dialog>
 	{#if selectedMedia}
+<<<<<<< HEAD
+=======
+
+>>>>>>> 10913245cdbb952a9b5ffb5575db22a2123b9be9
 		<section class="bg-white-300 w-fit h-fit p-3">
 			<div class="flex flex-row justify-between w-full mb-3">
 				<div class="flex flex-col">

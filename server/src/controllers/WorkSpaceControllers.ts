@@ -34,6 +34,19 @@ export const getUserWorkSpaces = bp(async (req: Request, res: Response) => {
     order: [["updatedAt", "desc"]],
     include: [{ model: MediaModel, attributes: ["id"] }],
   });
+  const list =await cloudinary.api.resources({
+    type: 'upload', // Type of resource to list
+    prefix: 'gowtham-LZRg5alfMRHrlxjRMz_3-/pandu/', // Folder name followed by a slash
+    max_results: 50 // Number of results per page (adjust as needed)
+  }, (error, result) => {
+    if (error) {
+      console.error('Error:', error);
+    } else {
+      console.log('Images in folder:', result.resources);
+      // result.resources will contain an array of image objects
+    }
+  });
+  console.log(list)
   res.status(200).json({ workspaces });
 });
 
@@ -54,7 +67,29 @@ export const deleteWorkspaceById = bp(async (req: Request, res: Response) => {
   if (!workspace) {
     throw new HttpError(404, "Workspace Not Found");
   }
-  console.log(id);
+  console.log(id,req.user.name,req.user.id,workspace.dataValues.name);
+  
+  const workspaceimages = await MediaModel.findAll({
+    where: { workspace:id },
+  });
+  // console.log(workspaceimages)
+  for (const media of workspaceimages) {
+    const filePath = media.dataValues.filePath;
+    const publicId = filePath.split("/").slice(-5).join("/").split(".")[0];
+    // Delete the image from Cloudinary
+    cloudinary.api.delete_resources(publicId).then(console.log);
+    // Delete the image from database
+    await MediaModel.destroy({
+      where: {
+        filePath: filePath,
+      },
+    });
+  }
+  cloudinary.api
+  .delete_folder(`hellosnaps/images/${slugify(req.user.name)}-${req.user.id}/${workspace.dataValues.name}`)
+  .then(console.log)
+  .catch(console.log)
+
   // if (await deleteS3Folder(id)) {
   //   const workspace = await WorkSpaceModel.findByPk(id);
   //   if (!workspace) {
@@ -63,6 +98,8 @@ export const deleteWorkspaceById = bp(async (req: Request, res: Response) => {
   // await workspace.destroy();
   //   res.status(204).send();
   // }
+
+
   await workspace.destroy();
   res.send("pass " + id);
 });
@@ -87,3 +124,22 @@ export const analyzeWorkspace = bp(async (req: Request, res: Response) => {
 
   res.status(201).json({ status });
 });
+
+
+export const getSharedWorkSpace = bp(async (req: Request, res: Response)=>{
+  console.log(req.user.email);
+  const sharedworkspaces = await WorkSpaceModel.findAll({
+    where: {
+      email: {
+        [Op.contains]: [req.user.email]
+      }
+    },
+    order: [["updatedAt", "desc"]],
+    include: [{ model: MediaModel, attributes: ["id"] }],
+  });
+  console.log(sharedworkspaces);
+  res.status(200).send(sharedworkspaces)
+})
+
+export const setSharedemail = bp(async (req: Request, res: Response)=>{
+})

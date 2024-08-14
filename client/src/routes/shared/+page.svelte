@@ -1,17 +1,15 @@
 <script lang="ts">
 	import api from "$lib/api";
 	import { workspaceStore, type WorkspaceType } from "$lib/stores";
-
-	let disableButton = false;
-
-	let workspaceTitle: string;
+	import { onMount,onDestroy } from 'svelte';
 	let search: string = "";
 	let workspaces: WorkspaceType[] | null | undefined;
 
 	const getWorkspaces = async () => {
-		const response = await api.get("/sharedworkspaces");
+		const response = await api.post(`/workspaces/shared`);
 		if (response.status == 200) {
-			workspaceStore.set(response.data.workspaces);
+			console.log(response.data)
+			workspaceStore.set(response.data);
 		}
 	};
 
@@ -25,9 +23,13 @@
 		}
 	};
 
-	if (!$workspaceStore) {
+	onMount(() => {
 		getWorkspaces();
-	}
+	});
+	
+	onDestroy(() => {
+  		workspaceStore.set([]); // Clear the data in the store
+	});
 
 	workspaceStore.subscribe((ws) => {
 		workspaces = ws;

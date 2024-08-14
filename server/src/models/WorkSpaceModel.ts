@@ -18,6 +18,10 @@ const WorkSpaceModel = sequelize.define("WorkSpaces", {
     allowNull: false,
     defaultValue: false,
   },
+  email: {
+    type: DataTypes.ARRAY(DataTypes.STRING(1000)),
+    allowNull: true,
+  },
   owner: {
     type: DataTypes.STRING,
     allowNull: true,
