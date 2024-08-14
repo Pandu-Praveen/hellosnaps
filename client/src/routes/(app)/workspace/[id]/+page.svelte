@@ -130,7 +130,6 @@
 
 <dialog>
 	{#if selectedMedia}
-		console.log("🚀 ~ selectedMedia:", selectedMedia)
 
 		<section class="bg-white-300 w-fit h-fit p-3">
 			<div class="flex flex-row justify-between w-full mb-3">
