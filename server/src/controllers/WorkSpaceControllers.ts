@@ -34,22 +34,6 @@ export const getUserWorkSpaces = bp(async (req: Request, res: Response) => {
     order: [["updatedAt", "desc"]],
     include: [{ model: MediaModel, attributes: ["id"] }],
   });
-  const list = await cloudinary.api.resources(
-    {
-      type: "upload", // Type of resource to list
-      prefix: "gowtham-LZRg5alfMRHrlxjRMz_3-/pandu/", // Folder name followed by a slash
-      max_results: 50, // Number of results per page (adjust as needed)
-    },
-    (error, result) => {
-      if (error) {
-        console.error("Error:", error);
-      } else {
-        console.log("Images in folder:", result.resources);
-        // result.resources will contain an array of image objects
-      }
-    },
-  );
-  console.log(list);
   res.status(200).json({ workspaces });
 });
 
@@ -70,17 +54,38 @@ export const deleteWorkspaceById = bp(async (req: Request, res: Response) => {
   if (!workspace) {
     throw new HttpError(404, "Workspace Not Found");
   }
-  console.log(id, req.user.name, req.user.id, workspace.dataValues.name);
+  console.log(1);
+  // console.log(id, req.user.name, req.user.id, workspace.dataValues);
 
   const workspaceimages = await MediaModel.findAll({
     where: { workspace: id },
   });
-  // console.log(workspaceimages)
+  console.log(1);
+  if (workspace.dataValues.tags) {
+    for (const tag of workspace.dataValues.tags) {
+      console.log(
+        "current",
+        `${workspaceimages[0].dataValues.filePath.split("/").slice(-5, -1).join("/").split(".")[0]}/Unique_Faces/${tag}`,
+        "end",
+      );
+      const publicId = `${workspaceimages[0].dataValues.filePath.split("/").slice(-5, -1).join("/").split(".")[0]}/Unique_Faces/${tag}`;
+      try {
+        await cloudinary.api.delete_resources([publicId]).then(console.log);
+      } catch (err) {
+        console.log(err);
+      } finally {
+        console.log("Successfully completed");
+      }
+    }
+  } else {
+    console.log("NO Tags Found!!!");
+  }
+  console.log(1);
   for (const media of workspaceimages) {
     const filePath = media.dataValues.filePath;
     const publicId = filePath.split("/").slice(-5).join("/").split(".")[0];
     // Delete the image from Cloudinary
-    cloudinary.api.delete_resources(publicId).then(console.log);
+    await cloudinary.api.delete_resources(publicId).then(console.log);
     // Delete the image from database
     await MediaModel.destroy({
       where: {
@@ -88,7 +93,7 @@ export const deleteWorkspaceById = bp(async (req: Request, res: Response) => {
       },
     });
   }
-  cloudinary.api
+  await cloudinary.api
     .delete_folder(
       `hellosnaps/images/${slugify(req.user.name)}-${req.user.id}/${workspace.dataValues.name}`,
     )
