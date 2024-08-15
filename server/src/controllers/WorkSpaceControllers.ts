@@ -75,7 +75,7 @@ export const deleteWorkspaceById = bp(async (req: Request, res: Response) => {
         console.log(err)
       }
       finally{
-        console.log("Successfull")
+        console.log("Successfully completed")
       }
     }
   }
