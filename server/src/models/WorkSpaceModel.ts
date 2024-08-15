@@ -22,6 +22,10 @@ const WorkSpaceModel = sequelize.define("WorkSpaces", {
     type: DataTypes.ARRAY(DataTypes.STRING(1000)),
     allowNull: true,
   },
+  tags: {
+    type: DataTypes.ARRAY(DataTypes.STRING),
+    allowNull: true,
+  },
   owner: {
     type: DataTypes.STRING,
     allowNull: true,

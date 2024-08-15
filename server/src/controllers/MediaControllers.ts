@@ -92,7 +92,9 @@ export const uploadTags = async (req: Request, res: Response) => {
   try {
     const workspaceId = req.params.id;
     console.log("🚀 ~ uploadTags ~ workspaceId:", workspaceId);
-
+    const workspace = await WorkSpaceModel.findOne({
+      where: { id: workspaceId },
+    });
     const META_DATA = req.body;
     console.log("🚀 ~ uploadTags ~ META_DATA:", META_DATA);
     const media = await MediaModel.findAll({
@@ -101,7 +103,7 @@ export const uploadTags = async (req: Request, res: Response) => {
       },
     });
     console.log("🚀 ~ uploadTags ~ media:", media);
-    // const tags = [];
+    let workspaceTags = [];
     for (const key of media) {
       const uniqueImagePath = key.dataValues.filePath
         .split("/")
@@ -124,9 +126,13 @@ export const uploadTags = async (req: Request, res: Response) => {
           }
         }
       }
+      workspaceTags.push(...totalTags);
       await key.update({ tags: totalTags });
       console.log(totalTags);
     }
+    workspaceTags = Array.from(new Set(workspaceTags));
+    workspaceTags.sort();
+    await workspace?.update({ tags: workspaceTags });
 
     res.status(200).json({ status: "ok" });
   } catch (error) {

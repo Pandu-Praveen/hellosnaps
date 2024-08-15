@@ -171,7 +171,8 @@
 						href={`/workspace/${workspace.id}`}
 						class="card p-2 h-[10rem] bg-[#F7F5F2] hover:bg-primary-200 flex flex-col justify-center gap-1 hover:border border-primary-500"
 					>
-						<h2 class="text-center font-bold text-2xl">{workspace.name}</h2>
+						<h1 class="text-center font-bold text-2xl truncate">{workspace.name}</h1>
+
 						<div
 							class="text-center font-semibold bg-[#a0a0a0] w-fit mx-auto text-white rounded-2xl px-2"
 						>
@@ -217,6 +218,7 @@
 					class="border-2 outline-tertiary-100 focus:outline-primary-300 p-2 w-full"
 					placeholder="Title"
 					required
+					maxlength="40"
 				/>
 			</fieldset>
 			<input
@@ -228,3 +230,11 @@
 		</form>
 	</div>
 </dialog>
+
+<style>
+	.truncate {
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+</style>
