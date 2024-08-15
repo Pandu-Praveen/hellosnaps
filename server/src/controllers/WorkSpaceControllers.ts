@@ -144,7 +144,6 @@ export const getSharedWorkSpace = bp(async (req: Request, res: Response) => {
   res.status(200).send(sharedworkspaces);
 });
 
-<<<<<<< HEAD
 
 
 export const setSharedemail = bp(async (req: Request, res: Response) => {
@@ -184,6 +183,3 @@ export const setSharedemail = bp(async (req: Request, res: Response) => {
   }
 });
 
-=======
-export const setSharedemail = bp(async (req: Request, res: Response) => {});
->>>>>>> 3090cc5af2bfb50f3a1382339feffc6770694e20

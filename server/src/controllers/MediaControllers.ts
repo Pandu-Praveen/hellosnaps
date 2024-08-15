@@ -56,7 +56,7 @@ export const uploadFiles = async (req: Request, res: Response) => {
 
       streamifier.createReadStream(file.buffer).pipe(uploadStream);
     }
-
+    
     res.status(200).json({ status: "ok" });
   } catch (error) {
     console.log(error);
