@@ -68,6 +68,7 @@
 		selectedMedia = photos[selectedIndex];
 		console.log(selectedIndex);
 	});
+	console.log(selectedMedia);
 </script>
 
 <section
@@ -163,7 +164,9 @@
 				<div class="flex flex-row gap-3 w-full overflow-scroll mt-2">
 					{#each Array.from(selectedMedia.tags) as people}
 						<img
-							src={BASE_URL + workspaceId + "/people/" + people}
+							src={selectedMedia.filePath.substring(0, selectedMedia.filePath.lastIndexOf("/")) +
+								"/Unique_Faces/" +
+								people}
 							alt={people}
 							class="w-[50px] h-[50px] md:w-[80px] md:h-[80px]"
 						/>

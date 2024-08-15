@@ -144,16 +144,17 @@ export const getSharedWorkSpace = bp(async (req: Request, res: Response) => {
   res.status(200).send(sharedworkspaces);
 });
 
-<<<<<<< HEAD
-
-
 export const setSharedemail = bp(async (req: Request, res: Response) => {
   try {
     const id = req.params.id;
     const { emails } = req.body;
 
     // Validate the input
-    if (!emails || !Array.isArray(emails) || !emails.every(email => typeof email === 'string')) {
+    if (
+      !emails ||
+      !Array.isArray(emails) ||
+      !emails.every((email) => typeof email === "string")
+    ) {
       return res.status(400).send({ message: "Invalid email list" });
     }
 
@@ -163,19 +164,19 @@ export const setSharedemail = bp(async (req: Request, res: Response) => {
     if (!workspace) {
       return res.status(404).send({ message: "Workspace not found" });
     }
-    console.log(workspace)
+    console.log(workspace);
     // Get the current email list or initialize as an empty array
     const currentEmails = workspace.dataValues.email || [];
-    
+
     // Merge current emails with new emails and remove duplicates
     const updatedEmails = Array.from(new Set([...currentEmails, ...emails]));
 
     // Update the workspace's email,shared field
     await workspace.update({
       email: updatedEmails,
-      shared: true
+      shared: true,
     });
-    console.log(workspace)
+    console.log(workspace);
 
     res.status(200).send({ message: "Emails added successfully" });
   } catch (error) {
@@ -183,7 +184,3 @@ export const setSharedemail = bp(async (req: Request, res: Response) => {
     res.status(500).send({ message: "Internal server error" });
   }
 });
-
-=======
-export const setSharedemail = bp(async (req: Request, res: Response) => {});
->>>>>>> 3090cc5af2bfb50f3a1382339feffc6770694e20
