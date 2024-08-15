@@ -12,9 +12,9 @@
 		emailInput = (event.target as HTMLInputElement).value;
 	};
 
-const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+	const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
-const handleKeydown = (event: KeyboardEvent) => {
+	const handleKeydown = (event: KeyboardEvent) => {
 		if (event.key === 'Enter' || event.key === 'Tab') {
 			event.preventDefault();
 			if (emailInput.trim()) {
@@ -23,46 +23,46 @@ const handleKeydown = (event: KeyboardEvent) => {
 		}
 	};
 
-const addTags = () => {
-	const modal = document.querySelector("dialog");
-	const newTags = emailInput
-		.split(',')
-		.map(tag => tag.trim())
-		.filter(tag => {
-			if (!tag.length) return false;
-            const inputElement = modal?.querySelector("#email-input") as HTMLInputElement;
-			// Check if the tag is a valid email
-			if (!emailPattern.test(tag)) {
-				// Provide feedback to the user that the email is invalid
+	const addTags = () => {
+		const modal = document.querySelector("dialog");
+		const newTags = emailInput
+			.split(',')
+			.map(tag => tag.trim())
+			.filter(tag => {
+				if (!tag.length) return false;
 				const inputElement = modal?.querySelector("#email-input") as HTMLInputElement;
-				if (inputElement) {
-					inputElement.style.borderColor = "red";
+				// Check if the tag is a valid email
+				if (!emailPattern.test(tag)) {
+					// Provide feedback to the user that the email is invalid
+					const inputElement = modal?.querySelector("#email-input") as HTMLInputElement;
+					if (inputElement) {
+						inputElement.style.borderColor = "red";
+					}
+					return false;
 				}
-				return false;
-			}
-			else{
-				inputElement.style.borderColor = "gray";
-			}
-			if (tags.includes(tag)) {
-				const inputElement = modal?.querySelector("#email-input") as HTMLInputElement;
-				if (inputElement) {
-					inputElement.style.borderColor = "red";
-				}
-				
-				return false;
-			}
-			else{
+				else{
 					inputElement.style.borderColor = "gray";
 				}
+				if (tags.includes(tag)) {
+					const inputElement = modal?.querySelector("#email-input") as HTMLInputElement;
+					if (inputElement) {
+						inputElement.style.borderColor = "red";
+					}
+					
+					return false;
+				}
+				else{
+						inputElement.style.borderColor = "gray";
+					}
 
-			return true;
-		});
+				return true;
+			});
 
-	if (newTags.length > 0) {
-		tags = [...tags, ...newTags];
-		emailInput = ''; 
-	}
-};
+		if (newTags.length > 0) {
+			tags = [...tags, ...newTags];
+			emailInput = ''; 
+		}
+	};
 	// Handle tag removal
 	const deleteTag = (index: number) => {
 		tags = tags.filter((_, i) => i !== index);
@@ -92,19 +92,15 @@ const addTags = () => {
 			return;
 		}
 		disableButton = true;
-		const response = await api.post("/workspaces/sharedemail", {
+		const response = await api.post(`/workspaces/${workspaceId}/sharedemail`, {
 			emails: tags
 		});
 		toggleModal();
-		if (response.status === 201) {
+		if (response.status === 200) {
 			window.location.reload();
 		}
 	};
 </script>
-
-
-
-
 
 <section class="flex flex-col gap-3 mx-auto">
 	<h2 class="text-2xl font-bold">Settings</h2>

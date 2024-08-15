@@ -20,5 +20,5 @@ router.get("/:id", getUserWorkspaceById);
 router.delete("/:id", deleteWorkspaceById);
 router.post("/:id/analyze", analyzeWorkspace);
 router.post("/shared",getSharedWorkSpace)
-router.post("/sharedemail",setSharedemail)
+router.post("/:id/sharedemail",setSharedemail)
 export default router;
