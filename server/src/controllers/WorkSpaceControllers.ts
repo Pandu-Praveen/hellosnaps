@@ -54,18 +54,35 @@ export const deleteWorkspaceById = bp(async (req: Request, res: Response) => {
   if (!workspace) {
     throw new HttpError(404, "Workspace Not Found");
   }
-  // console.log(workspace)
+  console.log(1)
   // console.log(id, req.user.name, req.user.id, workspace.dataValues);
 
   const workspaceimages = await MediaModel.findAll({
     where: { workspace: id },
   });
-  for (const tag of workspace.dataValues.tags){
+  console.log(1)
+  if(workspace.dataValues.tags){
 
-    console.log("current",`${((workspaceimages[0].dataValues.filePath).split("/").slice(-5,-1).join("/").split(".")[0])}/Unique_Faces/${tag}`,"end")
-    const publicId = `${((workspaceimages[0].dataValues.filePath).split("/").slice(-5,-1).join("/").split(".")[0])}/Unique_Faces/${tag}`;
-    await cloudinary.api.delete_resources([publicId]).then(console.log);
+    for (const tag of workspace.dataValues.tags){
+  
+      console.log("current",`${((workspaceimages[0].dataValues.filePath).split("/").slice(-5,-1).join("/").split(".")[0])}/Unique_Faces/${tag}`,"end")
+      const publicId = `${((workspaceimages[0].dataValues.filePath).split("/").slice(-5,-1).join("/").split(".")[0])}/Unique_Faces/${tag}`;
+      try{
+  
+        await cloudinary.api.delete_resources([publicId]).then(console.log);
+      }
+      catch(err){
+        console.log(err)
+      }
+      finally{
+        console.log("Successfull")
+      }
+    }
   }
+  else{
+    console.log("NO Tags Found!!!")
+  }
+  console.log(1)
   for (const media of workspaceimages) {
     const filePath = media.dataValues.filePath;
     const publicId = filePath.split("/").slice(-5).join("/").split(".")[0];
