@@ -12,8 +12,8 @@
 	let buttonText = "Analyze Photos";
 	let buttonDisabled = false;
 	let loading = false;
-	// console.log($page.url.pathname);
-
+	const check = $MediaStore ? $MediaStore[workspaceId] : null;
+	let photos = check?.Media;
 	const getWorkspace = async () => {
 		if ($MediaStore && $MediaStore[workspaceId]) {
 			workspace = $MediaStore[workspaceId];
@@ -34,6 +34,7 @@
 			}
 		}
 	};
+	console.log("sdfasddf", $MediaStore ? [workspaceId] : "");
 
 	const setButtonStatus = (status?: string) => {
 		switch (status) {
@@ -52,31 +53,41 @@
 	};
 
 	const analyzeWorkspace = async () => {
-		loading = true;
-		setButtonStatus("queued");
-		try {
-			const response = await api.post(`/workspaces/${workspaceId}/analyze`);
-			if (response.status === 201) {
-				console.log(response.data.status.status);
-				setButtonStatus("completed");
+		if (photos && photos.length > 0) {
+			// console.log("🚀 ~ analyzeWorkspace ~ photos:", photos);
+
+			loading = true;
+			setButtonStatus("queued");
+			try {
+				const response = await api.post(`/workspaces/${workspaceId}/analyze`);
+				if (response.status === 201) {
+					console.log(response.data.status.status);
+					setButtonStatus("completed");
+					toastStore.trigger({
+						message: "Albums created successfully!",
+						background: "bg-green-500",
+						autohide: true
+					});
+					const currentPath = $page.url.pathname;
+					goto(`${currentPath}/people`);
+				} else {
+					throw new Error("Failed to analyze workspace");
+				}
+			} catch (error) {
 				toastStore.trigger({
-					message: "Albums created successfully!",
-					background: "bg-green-500",
+					message: "Error creating albums: " + error,
+					background: "bg-red-500",
 					autohide: true
 				});
-				const currentPath = $page.url.pathname;
-				goto(`${currentPath}/people`);
-			} else {
-				throw new Error("Failed to analyze workspace");
+			} finally {
+				loading = false;
 			}
-		} catch (error) {
+		} else {
 			toastStore.trigger({
-				message: "Error creating albums: " + error,
-				background: "bg-red-500",
+				message: "Upload Photos to analyze",
+				background: "bg-yellow-500",
 				autohide: true
 			});
-		} finally {
-			loading = false;
 		}
 	};
 
