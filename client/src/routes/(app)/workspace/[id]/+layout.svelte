@@ -105,7 +105,7 @@
 		<section class="mx-auto max-w-screen-xl p-5 pt-5">
 			<div class="sticky top-0 bg-white pt-5">
 				<div class="flex flex-row justify-between">
-					<h2 class="font-bold text-3xl">{workspace.name}</h2>
+					<h2 class="workspacename font-bold text-3xl">{workspace.name}</h2>
 					<div class="flex flex-row gap-2">
 						<button
 							id="analyze"
@@ -141,5 +141,10 @@
 		100% {
 			transform: rotate(360deg);
 		}
+	}
+	h2.workspacename {
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
 	}
 </style>

@@ -32,7 +32,7 @@
 	];
 </script>
 
-<div class="relative overflow-x-auto hide-scrollbar">
+<div class="overflow-x-auto hide-scrollbar">
 	<ul class="flex flex-row gap-3 my-5 w-max">
 		{#each tabs as tab}
 			<a href={tab.title === "Home" ? "/" : pageLinkPrefix + tab.link} class="flex-shrink-0">

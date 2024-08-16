@@ -43,7 +43,7 @@
 		$uploadingStatus.totalFiles === $uploadingStatus.uploadedFiles
 	) {
 		toastStore.trigger({
-			message: `${$uploadingStatus.success.length - 1} Files Uploaded Successfully`
+			message: `${Math.abs($uploadingStatus.success.length - 1)} Files Uploaded Successfully`
 		});
 		uploadingStatus.set(null);
 		workspaceStore.set(null);

@@ -218,7 +218,7 @@
 					class="border-2 outline-tertiary-100 focus:outline-primary-300 p-2 w-full"
 					placeholder="Title"
 					required
-					maxlength="40"
+					maxlength="30"
 				/>
 			</fieldset>
 			<input
@@ -237,4 +237,9 @@
 		overflow: hidden;
 		text-overflow: ellipsis;
 	}
+	/* h1.workspacename {
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	} */
 </style>

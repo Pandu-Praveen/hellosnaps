@@ -71,56 +71,33 @@
 	console.log(selectedMedia);
 </script>
 
-<section
-	class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 mx-auto below-section"
->
+<section class="masonry mx-auto below-section">
 	{#if photos}
 		{#each photos as photo}
-			<a
-				href="."
-				on:click|preventDefault={() => toggleModal(photo.id)}
-				class="relative block group"
-			>
-				<img
-					id={photo.id}
-					height={300}
-					src={photo.filePath}
-					alt={photo.id}
-					class="placeholder animate-pulse bg-gray-200 min-h-48 w-full rounded-none aspect-video"
-					style="object-fit: cover; width: 100%; height: 100%;"
-					on:load={() => removePlaceholder(photo.id)}
-				/>
+			<div class="masonry-item group relative">
+				<a href="." on:click|preventDefault={() => toggleModal(photo.id)} class="block relative">
+					<img
+						id={photo.id}
+						height={300}
+						src={photo.filePath}
+						alt={photo.id}
+						class="placeholder animate-pulse bg-gray-200 w-full rounded-none"
+						style="object-fit: cover;border-radius:10px"
+						on:load={() => removePlaceholder(photo.id)}
+					/>
+				</a>
 				<!-- Delete Button -->
 				<button
-					on:click|preventDefault={(event) => {
-						event.stopPropagation();
-						deletePhoto(photo.filePath);
-					}}
-					on:keydown|preventDefault={(event) => {
-						if (event.key === "Enter" || event.key === " ") {
-							event.stopPropagation();
-							deletePhoto(photo.filePath);
-						}
-					}}
-					role="button"
-					aria-label="Delete photo"
-					class="delete-button hidden group-hover:block"
-					style="position:absolute; top: 8px; right: 8px; cursor: pointer; background: rgba(0, 0, 0, 0.5); border-radius: 50%; padding: 2px; border: none;"
+					class="delete-button absolute top-2 right-2 bg-red-600 text-white p-1 rounded-full"
+					on:click={() => deletePhoto(photo.filePath)}
 				>
-					<!-- You can use any icon here, FontAwesome is used in this example -->
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						fill="white"
-						viewBox="0 0 24 24"
-						width="16"
-						height="16"
-					>
+					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16">
 						<path
-							d="M3 6l3 18h12l3-18h-18zm12 2h2v14h-2v-14zm-4 0h2v14h-2v-14zm-4 0h2v14h-2v-14zm7-4l1-2h-6l1 2h4zm5-2v2h-16v-2h5l-1-2h8l-1 2h5z"
+							d="M6 19C6 20.1046 6.89543 21 8 21H16C17.1046 21 18 20.1046 18 19V7H6V19ZM19 4H15.5L14.793 3.293C14.402 2.902 13.837 2.902 13.446 3.293L12.5 4.236L11.554 3.293C11.163 2.902 10.598 2.902 10.207 3.293L9.5 4H6C5.447 4 5 4.447 5 5C5 5.553 5.447 6 6 6H19C19.553 6 20 5.553 20 5C20 4.447 19.553 4 19 4Z"
 						/>
 					</svg>
 				</button>
-			</a>
+			</div>
 		{/each}
 	{/if}
 </section>
@@ -183,5 +160,54 @@
 	}
 	.group:hover .delete-button {
 		display: block;
+	}
+	.masonry {
+		column-count: 4;
+		column-gap: 8px; /* Gap between columns */
+	}
+
+	.masonry-item {
+		break-inside: avoid;
+		margin-bottom: 10px; /* Space between items */
+		/* width: 90%; */
+	}
+	@media (max-width: 640px) {
+		.masonry {
+			column-count: 1;
+			column-gap: 8px; /* Gap between columns */
+		}
+		.masonry-item {
+			flex-basis: calc(50% - 8px);
+		}
+	}
+
+	@media (min-width: 640px) {
+		.masonry {
+			column-count: 2;
+			column-gap: 8px; /* Gap between columns */
+		}
+		.masonry-item {
+			flex-basis: calc(50% - 8px);
+		}
+	}
+
+	@media (min-width: 768px) {
+		.masonry {
+			column-count: 3;
+			column-gap: 8px; /* Gap between columns */
+		}
+		.masonry-item {
+			flex-basis: calc(33.333% - 8px);
+		}
+	}
+
+	@media (min-width: 1024px) {
+		.masonry {
+			column-count: 4;
+			column-gap: 8px; /* Gap between columns */
+		}
+		.masonry-item {
+			flex-basis: calc(25% - 8px);
+		}
 	}
 </style>
